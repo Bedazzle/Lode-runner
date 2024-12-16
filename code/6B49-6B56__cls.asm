@@ -1,0 +1,7 @@
+cls:
+	LD DE,$4001
+	LD HL,$4000
+	LD (HL),$00
+	LD BC,$1AFF
+	LDIR
+	RET

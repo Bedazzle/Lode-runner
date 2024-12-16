@@ -1,0 +1,28 @@
+;object_by_coords
+L753F:
+	PUSH BC
+	LD HL,UNPACKED_ROOM
+	LD E,B
+	LD D,$00
+	ADD HL,DE
+	SLA C	; x2
+	SLA C	; x4
+	SLA C	; x8
+	SLA C	; x16
+	JR NC,L7553
+
+	INC H
+	INC H
+L7553:
+	SLA C	; x32
+	JR NC,L7558
+
+	INC H
+
+L7558:
+	LD B,$00
+	ADD HL,BC
+	LD A,(HL)
+	POP BC
+
+	RET

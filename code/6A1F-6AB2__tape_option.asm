@@ -1,0 +1,101 @@
+tape_option:
+;L6a1f:
+	RLCA
+	INC B
+	LD A,(BC)
+	RLCA
+	LD B,$0A
+	RLCA
+	EX AF,AF'
+	DEC C
+	RLCA
+	LD A,(BC)
+	EX AF,AF'
+	RLCA
+	INC C
+	RRCA
+	DEC B
+	RRCA
+	LD C,$05
+	LD DE,$050E
+	INC DE
+	LD C,$06
+	LD D,$0C
+	RST $38
+
+	PUSH AF
+	CALL random_scr_fade
+
+	LD HL,TAPE_OPTION
+	LD DE,$0F44
+	LD BC,$0301
+	LD A,PAPER.BLACK + COLOR.GREEN + COLOR.BRIGHT
+	CALL print_big_strng
+
+	POP AF
+	PUSH AF
+	AND A
+	JR Z,L6A55
+
+	LD HL,SAVE_OPTION
+L6A55:
+	LD DE,$0BC4
+	LD A,PAPER.BLACK + COLOR.GREEN + COLOR.BRIGHT + COLOR.FLASH
+	CALL print_big_strng
+
+	LD BC,$060C
+	LD D,$14
+	LD HL,PRESS_BREAK
+	LD A,PAPER.BLACK + COLOR.WHITE + COLOR.BRIGHT
+	CALL print_string
+
+	LD BC,$0F0E
+	LD D,$02
+	CALL print_string
+
+	LD BC,$0410
+	LD D,$18
+	CALL print_string
+L6A7A:
+	CALL wait_for_key
+
+	CP 'e'
+	JR Z,L6A8D
+
+	CP 'c'
+	JR Z,L6A89
+
+	CP 'p'
+	JR NZ,L6A7A
+
+L6A89:
+	POP AF
+	JP print_menu
+
+L6A8D:
+	LD HL,#5960
+	LD B,$00
+L6A92:
+	LD (HL),$00
+	INC HL
+	DJNZ L6A92
+
+	POP AF
+	LD HL,$0556
+	AND A
+	JR Z,L6AA4
+
+	LD HL,$04C2
+	AND A
+	JR L6AA5
+
+L6AA4:
+	SCF
+L6AA5:
+	LD A,$FF
+	LD IX,LEVELS				;$AF24 = 44836
+	LD DE,LEVELS_END - LEVELS	;$50DC = 20700
+	LD BC,print_menu
+	PUSH BC
+
+	JP (HL)

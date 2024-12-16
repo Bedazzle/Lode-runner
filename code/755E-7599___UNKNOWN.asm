@@ -1,0 +1,50 @@
+L755E:	
+	PUSH BC
+	LD HL,UNPACKED_ROOM
+	LD E,B
+	LD D,$00
+	ADD HL,DE
+	SLA C
+	SLA C
+	SLA C
+	SLA C
+	JR NC,L7572
+
+	INC H
+	INC H
+L7572:
+	SLA C
+	JR NC,L7577
+
+	INC H
+
+L7577:
+	LD B,$00
+	ADD HL,BC
+	LD (HL),A
+	JR L7588
+
+L757D:
+	CP $05
+	JR NZ,L7583
+
+	LD A,$01
+
+L7583:
+	CP $06
+	JR NZ,L7588
+	XOR A
+
+L7588:
+	ADD A,$20
+	POP BC
+	CALL print_symbol
+
+	SUB $20
+	LD E,A
+	LD HL,SPRITE_COLORS
+	ADD HL,DE
+	LD A,(HL)
+	CALL sprite_color
+
+	RET

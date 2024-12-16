@@ -1,0 +1,74 @@
+add_hiscore:
+	LD IY,CONGRATS_ATTRIB
+	CALL random_scr_fade
+
+	LD HL,aCongratulation
+	LD B,$05
+L7686:
+	PUSH BC
+	LD A,(IY+#00)
+	LD B,(IY+#01)
+	LD C,(IY+#02)
+	LD D,(IY+#03)
+	CALL print_string
+
+	LD E,$04
+	ADD IY,DE
+	POP BC
+	DJNZ L7686
+
+	LD BC,$0C0F
+	CALL enter_name
+
+	LD IY,HISCORE_PREV
+	PUSH IX
+	POP HL
+	LD DE,HISCORE_LAST
+	LD BC,$0011
+	LDIR
+	LD B,$01
+L76B4:
+	PUSH BC
+	LD L,(IY+$00)
+	LD H,(IY+$01)
+	LD E,(IX+$00)
+	LD D,(IX+$01)
+	AND A
+	SBC HL,DE
+	JR C,L76CC
+
+	POP BC
+
+L76C7:
+	LD A,B
+	LD (CHEATED),A
+
+	RET
+
+L76CC:  
+	PUSH IY
+	POP HL
+	PUSH HL
+	LD BC,$0011
+	ADD HL,BC
+	EX DE,HL
+	POP HL
+	LDIR
+	PUSH IY
+	POP DE
+	PUSH IX
+	POP HL
+	LD BC,$0011
+	LDIR
+	LD B,$11
+L76E5:
+	DEC IY
+	DJNZ L76E5
+
+	POP BC
+	INC B
+	LD A,$05
+	CP B
+	JR NZ,L76B4
+
+	JR L76C7

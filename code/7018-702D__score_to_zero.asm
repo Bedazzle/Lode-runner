@@ -1,0 +1,10 @@
+score_to_zero:
+;L7018:
+	LD HL,'00'
+	LD (SCORE_TXT),HL
+	LD (SCORE_TXT+2),HL
+	LD (SCORE_TXT+4),HL
+	LD (SCORE_TXT+5),HL
+	LD HL,$0000
+	LD (SCORE),HL
+	RET

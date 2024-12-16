@@ -1,0 +1,129 @@
+print_game_over:
+	CALL clear_score
+
+	LD A,$01
+	LD (CURRENT_ROOM),A
+	LD A,$05
+	LD (LIVES),A
+	XOR A
+	LD (L8F73+1),A		; #8F74 !!! SMC
+	LD A,#C9
+	LD (L8F91),A
+	CALL random_scr_fade
+
+	LD BC,$0A0B
+	LD DE,$0D47
+	LD A,PAPER.BLACK + COLOR.WHITE + COLOR.BRIGHT
+	LD HL,aPressAnyKey_0
+	CALL print_big_strng
+
+	LD B,$19
+L7057:
+	HALT
+	DJNZ L7057
+
+L705A:
+	CALL wait_for_key
+
+	CP #FF
+	JR Z,L705A
+
+L7061:
+	CALL play_room
+
+	AND A
+	JR NZ,L7070
+
+	LD HL,LIVES
+	DEC (HL)
+	JR NZ,L7061
+
+	JP game_over
+	
+L7070:
+	LD HL,CURRENT_ROOM
+	INC (HL)
+	LD A,(HL)
+	LD HL,LIVES
+	INC (HL)
+	JR NZ,L707C
+
+	DEC (HL)
+L707C:
+	CP 'L'
+	JR NZ,L7061
+
+	CALL random_scr_fade
+	CALL print_info_line
+
+	LD BC,$0C02
+	LD DE,$0947
+	LD A,PAPER.BLACK + COLOR.WHITE + COLOR.BRIGHT
+	LD HL,aMadeIt
+	CALL print_big_strng
+
+	LD A,(CHEATED)
+	CP $FF
+	JR NZ,L70A5
+
+	LD D,$40
+	LD BC,$0005
+	LD A,PAPER.BLACK + COLOR.GREEN + COLOR.BRIGHT
+	CALL print_string
+
+L70A5:
+	LD HL,aBonus500PerLif
+	LD BC,$0109
+	LD D,$1F
+	LD A,PAPER.BLACK + COLOR.YELLOW + COLOR.BRIGHT
+	CALL print_string
+
+	LD BC,$060C
+	LD DE,$0C45
+	LD A,PAPER.BLACK + COLOR.SKYBLUE + COLOR.BRIGHT
+	CALL print_big_strng
+
+L70BD:
+	LD HL,LIVES
+	DEC (HL)
+	LD BC,$0032
+	CALL change_score
+
+	LD BC,$0032
+	CALL change_score
+	CALL print_info_line
+
+	LD DE,$0745
+	LD BC,$130C
+	LD A,PAPER.BLACK + COLOR.SKYBLUE + COLOR.BRIGHT
+	LD HL,SCORE_TXT
+	CALL print_big_strng
+
+	LD HL,$03E8
+	LD DE,$0064
+	CALL BEEPER
+
+	HALT
+	LD HL,LIVES
+	LD A,(HL)
+	AND A
+	JR NZ,L70BD
+
+	LD HL,aWellDone
+	LD A,PAPER.BLACK + COLOR.RED + COLOR.BRIGHT
+	LD DE,$0942
+	LD BC,$0B10
+	CALL print_big_strng
+
+	LD BC,$0914
+	LD A,PAPER.BLACK + COLOR.MAGENTA + COLOR.BRIGHT
+	LD D,$0D
+	CALL print_string
+
+	LD HL,L8B08
+	LD (loc_8129+1),HL	; !!! SMC
+	CALL starfield
+
+	LD HL,print_menu
+	LD (loc_8129+1),HL	; !!! SMC
+	JP check_hiscore

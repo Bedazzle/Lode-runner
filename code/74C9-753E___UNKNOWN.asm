@@ -1,0 +1,82 @@
+L74C9:  
+	LD C,$00
+	LD D,$00
+	LD IY,ENEMIES
+	LD HL,$0001
+	LD (PLAYER_COL),HL
+	INC H
+	LD (ENEMIES),HL
+L74DB:
+	LD B,$00
+L74DD:
+	CALL get_sprite_colr
+
+	AND $7F
+	CP $07
+	JR NZ,L74F3
+
+	PUSH BC
+	LD A,B
+	ADD A,A
+	ADD A,A
+	ADD A,A
+	LD B,A
+	LD (PLAYER_COL),BC
+	POP BC
+	JR L750E
+
+L74F3:
+	CP $43
+	JR NZ,L750E
+
+	LD A,D
+	CP $05
+	JR NZ,L7503
+
+	LD A,' '
+	CALL print_symbol
+
+	JR L750E
+
+L7503:
+	INC D
+	LD (IY+$00),C
+	LD (IY+$01),B
+	INC IY
+	INC IY
+L750E:
+	INC B
+	BIT 5,B
+	JR Z,L74DD
+
+	INC C
+	LD A,$16
+	CP C
+	JR NZ,L74DB
+
+	INC D
+	DEC D
+	JR NZ,L751E
+
+	INC D
+L751E:
+	LD A,(PLAYER_ROW)
+	OR D
+	LD (PLAYER_ROW),A
+	LD A,(CURRENT_ROOM)
+	LD L,A
+	LD H,$00
+	ADD HL,HL	; x2
+	ADD HL,HL	; x4
+	PUSH HL				; optimize to ld d,h: ld e,l
+	POP DE
+	ADD HL,HL	; x8
+	ADD HL,DE	; x12
+	LD DE,MEN_COORDS
+	ADD HL,DE
+	LD DE,PLAYER_COL
+	LD BC,$000C
+	EX DE,HL
+	LDIR
+
+	RET
